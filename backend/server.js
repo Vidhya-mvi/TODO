@@ -15,7 +15,7 @@ app.use(cookieparser());
 
 
 app.use(cors({
-  origin: "http://localhost:5173", 
+  origin: "https://todo-beta-ruby-47.vercel.app/", 
   credentials: true               
 }));
 
