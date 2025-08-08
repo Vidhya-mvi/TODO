@@ -4,26 +4,40 @@ import privateHttps from "../api/privatehttps";
 import "../index.css";
 
 function Home() {
-  const [todo, setTodo] = useState([]);
+  const [todos, setTodos] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const res = await privateHttps.get("/todo");
-        setTodo(res.data.todos);
-        console.log("Fetched Todos:", res.data);
-      } catch (err) {
-        console.log("Error fetching todos:", err);
-      }
-    };
+  const fetchTodos = async (pageNumber = 1) => {
+    try {
+      const res = await privateHttps.get(`/todo?page=${pageNumber}`);
+      const newTodos = res.data.todos || [];
 
-    fetchTodos();
-  }, []);
+      // Filter out duplicates
+      setTodos((prev) => {
+        const existingIds = new Set(prev.map((todo) => todo._id));
+        const filteredTodos = newTodos.filter((todo) => !existingIds.has(todo._id));
+        return [...prev, ...filteredTodos];
+      });
+
+      setHasMore(pageNumber < res.data.totalPages);
+    } catch (err) {
+      console.log("Error fetching todos:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodos(page);
+  }, [page]);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     navigate("/login");
+  };
+
+  const handleShowMore = () => {
+    setPage((prev) => prev + 1);
   };
 
   return (
@@ -41,8 +55,8 @@ function Home() {
       </div>
 
       <div className="todo-list">
-        {todo.length > 0 ? (
-          todo.map((item) => (
+        {todos.length > 0 ? (
+          todos.map((item) => (
             <Link to={`/todo/${item._id}`} key={item._id} className="todo-card">
               <h3>{item.title}</h3>
               <p>{item.description}</p>
@@ -53,6 +67,14 @@ function Home() {
           <p className="no-todos">No todos available</p>
         )}
       </div>
+
+      {hasMore && (
+        <div className="show-more-container">
+          <button className="home-btn show-more-btn" onClick={handleShowMore}>
+            Show More
+          </button>
+        </div>
+      )}
     </div>
   );
 }

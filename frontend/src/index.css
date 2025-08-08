@@ -576,3 +576,18 @@ form input::placeholder {
 .invite-status-message.warning {
   color: #d97706;
 }
+
+
+.show-more-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.show-more-btn {
+  padding: 10px 20px;
+  background-color: #444;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
