@@ -19,7 +19,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await PublicHttps.post("auth/register", form);
+      const res = await PublicHttps.post("/apiauth/register", form);
       console.log("Registering successfully:", res.data);
 
       const inviteToken = localStorage.getItem("inviteToken");
